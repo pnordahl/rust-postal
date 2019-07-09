@@ -12,6 +12,7 @@ addons:
         - gcc-4.8
         - libsnappy-dev
         - realpath
+        - pkg-config
 
 matrix:
   allow_failures:
@@ -29,8 +30,11 @@ before_install:
     - ./configure --datadir=$(pwd)/data --prefix=$(realpath $(pwd)/../deps) --bindir=$(realpath $(pwd)/../deps)
     - make install
     - cd ..
-    - export PKG_CONFIG_PATH=$(pwd)/deps/lib/pkgconfig:$PKG_CONFIG_PATH
     - export LD_LIBRARY_PATH=$(pwd)/deps/lib:$LD_LIBRARY_PATH
+    - pkg-config --cflags libpostal
+    - pkg-config --libs libpostal
+    - pkg-config --cflags --libs libpostal
+    - sudo ldconfig
 
 script:
   - cargo build --verbose --all
