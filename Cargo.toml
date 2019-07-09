@@ -1,7 +1,9 @@
 [package]
 name = "postal"
-description = "FFI bindings and safe interface to libpostal."
+description = "FFI bindings and safe interface to libpostal"
 license = "MIT"
+homepage = "https://github.com/pnordahl/rust-postal"
+repository = "https://github.com/pnordahl/rust-postal"
 version = "0.1.0"
 authors = ["Patrick Nordahl <plnordahl@gmail.com>"]
 edition = "2018"
