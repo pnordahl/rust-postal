@@ -8,7 +8,6 @@ This library provides [rust-lang/rust-bindgen](https://github.com/rust-lang/rust
 
 Still TODO:
 - [ ] normalize_address support
-- [ ] CI
 
 ## Installation
 

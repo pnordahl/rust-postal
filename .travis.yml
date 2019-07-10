@@ -23,21 +23,13 @@ cache: cargo
 
 before_install:
     - export CC="gcc-4.8"
-    # - mkdir deps
     - git clone https://github.com/openvenues/libpostal
     - cd libpostal
     - ./bootstrap.sh
-    # - ./configure --datadir=$(pwd)/data --prefix=$(realpath $(pwd)/../deps) --bindir=$(realpath $(pwd)/../deps)
     - ./configure --datadir=$(pwd)/data
-    # - make install
     - sudo make install
     - cd ..
-    # - export PKG_CONFIG_PATH=$(pwd)/deps/lib/pkgconfig:$PKG_CONFIG_PATH
-    # - export LD_LIBRARY_PATH=$(pwd)/deps/lib:$LD_LIBRARY_PATH
     - sudo ldconfig
-    - pkg-config --cflags libpostal
-    - pkg-config --libs libpostal
-    - pkg-config --cflags --libs libpostal
 
 script:
   - cargo build --verbose --all
