@@ -28,7 +28,7 @@ extern crate postal;
 
 ## Usage example (expand_address)
 
-*Note*: `libpostal` is not threadsafe. As a result, do not create more than one `postal::Context` per process. `Context::expand_address` and `Context::normalize_address` do internal locking, and are safe to call concurrently.
+*Note*: `libpostal` is not threadsafe. As a result, do not create more than one `postal::Context` per process. `Context::expand_address` and `Context::parse_address` do internal locking, and are safe to call concurrently.
 
 This is a minimal example of using the `expand_address` API:
 
