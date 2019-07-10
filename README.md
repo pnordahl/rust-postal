@@ -7,7 +7,7 @@
 This library provides [rust-lang/rust-bindgen](https://github.com/rust-lang/rust-bindgen) generated Rust -> C bindings, and puts an ergonomic and safe Rust API on top of them.
 
 Still TODO:
-- [ ] normalize_address support
+- [ ] parse_address support
 
 ## Installation
 
