@@ -96,7 +96,7 @@ Note: `--test-threads 1` is required due to the single-threaded nature of `libpo
 
 ## Release History
 
-* 0.1.1
+* 0.2.0
 	* Added `parse_address` support.
 * 0.1.0
     * Initial release
