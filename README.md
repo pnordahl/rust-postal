@@ -63,10 +63,10 @@ use postal::{Context, InitOptions, ParseAddressOptions};
 // initialize a context to work with
 let mut ctx = Context::new();
 
-// enable address expansion for this context
+// enable address parsing for this context
 ctx.init(InitOptions{parse_address: true}).unwrap();
 
-// these options are safe to persist and reuse between calls to `expand_address`.
+// these options are safe to persist and reuse between calls to `parse_address`.
 // Note: `language` and `country` are technically options that libpostal will accept
 // for purposes of parsing addresses, but it ignores them at present.
 let mut opts = ParseAddressOptions::new();
