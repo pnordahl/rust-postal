@@ -6,9 +6,6 @@
 
 This library provides [rust-lang/rust-bindgen](https://github.com/rust-lang/rust-bindgen) generated Rust <-> C bindings, and puts an ergonomic and safe Rust API on top of them.
 
-Still TODO:
-- [ ] parse_address support
-
 ## Installation
 
 Follow the README instructions at [openvenues/libpostal](https://github.com/openvenues/libpostal) to install the shared library for your platform. Currently, the compiled object is dynamically linked when your project runs - static linkage could be supported in the future.
@@ -30,7 +27,7 @@ extern crate postal;
 
 *Note*: `libpostal` is not threadsafe. As a result, do not create more than one `postal::Context` per process. `Context::expand_address` and `Context::parse_address` do internal locking, and are safe to call concurrently.
 
-This is a minimal example of using the `expand_address` API:
+This is an example of using the `expand_address` API:
 
 ```rust
 extern crate postal;
@@ -57,6 +54,32 @@ for e in exps {
 }
 ```
 
+This is how you might use the `parse_address` API:
+
+```rust
+extern crate postal;
+use postal::{Context, InitOptions, ParseAddressOptions};
+
+// initialize a context to work with
+let mut ctx = Context::new();
+
+// enable address expansion for this context
+ctx.init(InitOptions{parse_address: true}).unwrap();
+
+// these options are safe to persist and reuse between calls to `expand_address`.
+// Note: `language` and `country` are technically options that libpostal will accept
+// for purposes of parsing addresses, but it ignores them at present.
+let mut opts = ParseAddressOptions::new();
+
+// parse a single address into a `postal::Components` iterator
+let comps = ctx.parse_address(
+	"1234 Cherry Ln, Podunk TX", &mut opts)
+	.unwrap();
+for c in comps {
+	dbg!(c);
+}
+```
+
 _For more examples and usage, please refer to the tests or benchmarks._
 
 ## Development setup
@@ -73,6 +96,8 @@ Note: `--test-threads 1` is required due to the single-threaded nature of `libpo
 
 ## Release History
 
+* 0.1.1
+	* Added `parse_address` support.
 * 0.1.0
     * Initial release
 
