@@ -15,7 +15,7 @@ Add `postal` to your `Cargo.toml`:
 Add this to your Cargo.toml:
 ```
 [dependencies]
-postal = "0.1"
+postal = "0.2"
 ```
 
 Next, add this to your crate:
