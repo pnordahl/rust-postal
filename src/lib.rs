@@ -123,7 +123,7 @@ impl<'a> Components<'a> {
         }
     }
 }
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Component<'a> {
     label: &'a str,
     value: &'a str,
@@ -133,19 +133,15 @@ impl<'a> Iterator for Components<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         unsafe {
             let resp = *self.resp;
-            dbg!(self.index);
-            dbg!(resp.num_components);
             if self.index < resp.num_components as isize {
-                let mut p = resp.components.offset(self.index);
+                let mut p = *resp.components.offset(self.index);
                 let cs = CStr::from_ptr(p as *const c_char);
                 match cs.to_str() {
                     Ok(component) => {
-                        dbg!(component);
-                        p = resp.labels.offset(self.index);
+                        p = *resp.labels.offset(self.index);
                         let ls = CStr::from_ptr(p as *const c_char);
                         match ls.to_str() {
                             Ok(label) => {
-                                dbg!(label);
                                 self.index += 1;
                                 return Some(Component {
                                     label: label,
@@ -153,14 +149,12 @@ impl<'a> Iterator for Components<'a> {
                                 });
                             }
                             Err(_) => {
-                                dbg!("label not a str");
                                 // TODO: bad string from libpostal, can't really handle
                                 return None;
                             }
                         }
                     }
                     Err(_) => {
-                        dbg!("component not a str");
                         // TODO: bad string from libpostal, can't really handle
                         return None;
                     }
@@ -351,15 +345,30 @@ mod tests {
         let components = ctx
             .parse_address("1234 Bengal Ln, Plano TX 75023", &mut opts)
             .unwrap();
-        for c in components {
-            dbg!(c);
-        }
-        // let expect = vec![
-        //     "thirty w 26th saint fleuve numero 7",
-        //     "thirty w 26 th saint fleuve numero 7",
-        // ];
+        let expect = vec![
+            Component {
+                label: "house_number",
+                value: "1234",
+            },
+            Component {
+                label: "road",
+                value: "bengal ln",
+            },
+            Component {
+                label: "city",
+                value: "plano",
+            },
+            Component {
+                label: "state",
+                value: "tx",
+            },
+            Component {
+                label: "postcode",
+                value: "75023",
+            },
+        ];
 
-        // assert!(expansions.eq(expect));
+        assert!(components.eq(expect));
     }
 
     #[test]
