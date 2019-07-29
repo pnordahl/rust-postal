@@ -119,8 +119,8 @@ impl<'a> Components<'a> {
 }
 #[derive(Debug, PartialEq, Eq)]
 pub struct Component<'a> {
-    label: &'a str,
-    value: &'a str,
+    pub label: &'a str,
+    pub value: &'a str,
 }
 impl<'a> Iterator for Components<'a> {
     type Item = Component<'a>;
