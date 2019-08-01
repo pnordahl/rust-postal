@@ -95,11 +95,17 @@ cargo bench
 Note: `--test-threads 1` is required due to the single-threaded nature of `libpostal`.
 
 ## Release History
+* 0.2.2
+	* Resolve locking issue due to unbound Mutex guard.
+
+* 0.2.1
+	* Make Component fields public.
 
 * 0.2.0
 	* Added `parse_address` support.
+
 * 0.1.0
-    * Initial release
+	* Initial release.
 
 ## Meta
 
