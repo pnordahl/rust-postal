@@ -191,7 +191,7 @@ impl Context {
         }
     }
     pub fn init(&mut self, opts: InitOptions) -> Result<(), PostalError> {
-        let _ = self.mutex.lock();
+        let _guard = self.mutex.lock();
         unsafe {
             if !libpostal_setup() {
                 return Err(PostalError::LibpostalSetup);
@@ -222,7 +222,7 @@ impl Context {
         opts: &mut ExpandAddressOptions,
     ) -> Result<Expansions, PostalError> {
         if self.setup_done && self.expand_address_enabled {
-            let _ = self.mutex.lock();
+            let _guard = self.mutex.lock();
             unsafe {
                 match CString::new(a) {
                     Ok(c_string) => {
@@ -245,7 +245,7 @@ impl Context {
         opts: &mut ParseAddressOptions,
     ) -> Result<Components, PostalError> {
         if self.setup_done && self.parse_address_enabled {
-            let _ = self.mutex.lock();
+            let _guard = self.mutex.lock();
             unsafe {
                 match CString::new(a) {
                     Ok(c_string) => {
