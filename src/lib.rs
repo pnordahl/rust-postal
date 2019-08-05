@@ -369,10 +369,7 @@ mod tests {
     fn test_parse_address() {
         println!("Loading address parser...");
         let mut ctx = Context::new();
-        ctx.init(InitOptions {
-            expand_address: false,
-            parse_address: true,
-        })
+        ctx.init(InitOptions::new().parse_address())
         .unwrap();
         println!("Loading done.");
 
@@ -412,10 +409,7 @@ mod tests {
     #[test]
     fn test_expand_address() {
         let mut ctx = Context::new();
-        ctx.init(InitOptions {
-            expand_address: true,
-            parse_address: false,
-        })
+        ctx.init(InitOptions::new().expand_address())
         .unwrap();
         let mut opts = ExpandAddressOptions::new();
         opts.set_languages(vec!["fr"].as_slice());
@@ -433,10 +427,7 @@ mod tests {
     #[test]
     fn test_expand_address_no_languages() {
         let mut ctx = Context::new();
-        ctx.init(InitOptions {
-            expand_address: true,
-            parse_address: false,
-        })
+        ctx.init(InitOptions::new().expand_address())
         .unwrap();
         let mut opts = ExpandAddressOptions::new();
         let expansions = ctx
