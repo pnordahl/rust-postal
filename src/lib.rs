@@ -170,6 +170,32 @@ impl<'a> Drop for Components<'a> {
 pub struct InitOptions {
     pub expand_address: bool,
     pub parse_address: bool,
+    pub data_dir: Option<CString>,
+}
+impl InitOptions {
+    pub fn new() -> InitOptions {
+        InitOptions {
+            expand_address: false,
+            parse_address: false,
+            data_dir: None,
+        }
+    }
+
+    pub fn expand_address(&mut self) -> &mut InitOptions {
+        self.expand_address = true;
+        self
+    }
+    pub fn parse_address(&mut self) -> &mut InitOptions {
+        self.parse_address = true;
+        self
+    }
+    pub fn data_dir(&mut self, data_dir: &str) -> &mut InitOptions {
+        match CString::new(data_dir) {
+            Ok(s) => self.data_dir = Some(s),
+            _ => (),
+        }
+        self
+    }
 }
 pub struct Context {
     setup_done: bool,
@@ -190,17 +216,27 @@ impl Context {
             mutex: Mutex::new(false),
         }
     }
-    pub fn init(&mut self, opts: InitOptions) -> Result<(), PostalError> {
+    pub fn init(&mut self, opts: &InitOptions) -> Result<(), PostalError> {
         let _guard = self.mutex.lock();
         unsafe {
-            if !libpostal_setup() {
+            let r = match &opts.data_dir {
+                Some(d) => libpostal_setup_datadir(d.as_ptr() as *mut c_char),
+                None => libpostal_setup(),
+            };
+            if !r {
                 return Err(PostalError::LibpostalSetup);
             }
         }
         self.setup_done = true;
         if opts.expand_address {
             unsafe {
-                if !libpostal_setup_language_classifier() {
+                let r = match &opts.data_dir {
+                    Some(d) => {
+                        libpostal_setup_language_classifier_datadir(d.as_ptr() as *mut c_char)
+                    }
+                    None => libpostal_setup_language_classifier(),
+                };
+                if !r {
                     return Err(PostalError::LibpostalEnableExpansion);
                 }
             }
@@ -208,7 +244,11 @@ impl Context {
         }
         if opts.parse_address {
             unsafe {
-                if !libpostal_setup_parser() {
+                let r = match &opts.data_dir {
+                    Some(d) => libpostal_setup_parser_datadir(d.as_ptr() as *mut c_char),
+                    None => libpostal_setup_parser(),
+                };
+                if !r {
                     return Err(PostalError::LibpostalEnableParsing);
                 }
             }
