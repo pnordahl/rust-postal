@@ -309,7 +309,7 @@ impl fmt::Display for PostalError {
 }
 
 impl error::Error for PostalError {
-    fn cause(&self) -> Option<&error::Error> {
+    fn cause(&self) -> Option<&dyn error::Error> {
         match *self {
             PostalError::LibpostalSetup => None,
             PostalError::LibpostalEnableExpansion => None,
