@@ -20,6 +20,7 @@ use std::os::raw::c_char;
 pub struct ExpandAddressOptions {
     pub opts: libpostal_normalize_options_t,
     c_languages: Option<Vec<CString>>,
+    c_lang_array: Option<Vec<*const c_char>>
 }
 impl ExpandAddressOptions {
     pub fn new() -> Self {
@@ -27,14 +28,20 @@ impl ExpandAddressOptions {
             ExpandAddressOptions {
                 opts: libpostal_get_default_options(),
                 c_languages: None,
+                c_lang_array: None,
             }
         }
     }
     pub fn set_languages(&mut self, langs: &[&str]) {
         let c_langs: Vec<CString> = langs.iter().map(|l| CString::new(*l).unwrap()).collect();
-        self.opts.languages = c_langs.as_ptr() as *mut *mut c_char;
+        let mut c_lang_array: Vec<*const c_char> = vec![];
+        for lang in &c_langs {
+            c_lang_array.push(lang.as_ptr());
+        }
+        self.opts.languages = c_lang_array.as_ptr() as *mut *mut c_char;
         self.opts.num_languages = c_langs.len();
         self.c_languages = Some(c_langs);
+        self.c_lang_array = Some(c_lang_array)
     }
 }
 
@@ -438,6 +445,28 @@ mod tests {
             "1234 cherry lane podunk tx",
             "1234 cherry line podunk texas",
             "1234 cherry line podunk tx",
+        ];
+
+        assert!(expansions.eq(expect));
+    }
+
+    #[test]
+    fn test_expand_address_multiple_languages() {
+        let mut ctx = Context::new();
+        ctx.init(InitOptions::new().expand_address())
+        .unwrap();
+        let mut opts = ExpandAddressOptions::new();
+        opts.set_languages(vec!["es", "fr"].as_slice());
+        let expansions = ctx
+            .expand_address("Thirty W 26th St Fl #7", &mut opts)
+            .unwrap();
+        let expect = vec![
+            "thirty oeste 26th sant fl numero 7",
+            "thirty w 26th sant fl numero 7",
+            "thirty oeste 26 th sant fl numero 7",
+            "thirty w 26 th sant fl numero 7",
+            "thirty w 26th saint fleuve numero 7",
+            "thirty w 26 th saint fleuve numero 7",
         ];
 
         assert!(expansions.eq(expect));
