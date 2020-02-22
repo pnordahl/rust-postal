@@ -36,6 +36,70 @@ impl ExpandAddressOptions {
         self.opts.num_languages = c_langs.len();
         self.c_languages = Some(c_langs);
     }
+
+    pub fn set_address_components(&mut self, address_components: u16) {
+        self.opts.address_components = address_components;
+    }
+
+    pub fn set_latin_ascii(&mut self, latin_ascii: bool) {
+        self.opts.latin_ascii = latin_ascii;
+    }
+
+    pub fn set_transliterate(&mut self, transliterate: bool) {
+        self.opts.transliterate = transliterate;
+    }
+
+    pub fn set_strip_accents(&mut self, strip_accents: bool) {
+        self.opts.strip_accents = strip_accents;
+    }
+
+    pub fn set_decompose(&mut self, decompose: bool) {
+        self.opts.decompose = decompose;
+    }
+
+    pub fn set_lowercase(&mut self, lowercase: bool) {
+        self.opts.lowercase = lowercase;
+    }
+
+    pub fn set_trim_string(&mut self, trim_string: bool) {
+        self.opts.trim_string = trim_string;
+    }
+
+    pub fn set_drop_parentheticals(&mut self, drop_parentheticals: bool) {
+        self.opts.drop_parentheticals = drop_parentheticals;
+    }
+
+    pub fn set_replace_numeric_hyphens(&mut self, replace_numeric_hyphens: bool) {
+        self.opts.replace_numeric_hyphens = replace_numeric_hyphens;
+    }
+
+    pub fn set_delete_word_hyphens(&mut self, delete_word_hyphens: bool) {
+        self.opts.delete_word_hyphens = delete_word_hyphens;
+    }
+
+    pub fn set_delete_final_periods(&mut self, delete_final_periods: bool) {
+        self.opts.delete_final_periods = delete_final_periods;
+    }
+
+    pub fn set_delete_acronym_periods(&mut self, delete_acronym_periods: bool) {
+        self.opts.delete_acronym_periods = delete_acronym_periods;
+    }
+
+    pub fn set_drop_english_possessives(&mut self, delete_english_possessives: bool) {
+        self.opts.drop_english_possessives = delete_english_possessives;
+    }
+
+    pub fn set_delete_apostrophes(&mut self, delete_apostrophes: bool) {
+        self.opts.delete_apostrophes = delete_apostrophes;
+    }
+
+    pub fn set_expand_numex(&mut self, expand_numex: bool) {
+        self.opts.expand_numex = expand_numex;
+    }
+
+    pub fn set_roman_numerals(&mut self, roman_numerals: bool) {
+        self.opts.roman_numerals = roman_numerals;
+    }
 }
 
 pub struct Expansions<'a> {
@@ -90,14 +154,30 @@ impl<'a> Drop for Expansions<'a> {
 #[derive(Debug)]
 pub struct ParseAddressOptions {
     pub opts: libpostal_address_parser_options_t,
+    c_lang: Option<CString>,
+    c_country: Option<CString>,
 }
-impl<'a> ParseAddressOptions {
+impl ParseAddressOptions {
     pub fn new() -> Self {
         unsafe {
             ParseAddressOptions {
                 opts: libpostal_get_address_parser_default_options(),
+                c_lang: None,
+                c_country: None,
             }
         }
+    }
+
+    pub fn set_language(&mut self, language: &str) {
+        let c_lang = CString::new(language).unwrap();
+        self.opts.language = c_lang.as_ptr() as *mut c_char;
+        self.c_lang = Some(c_lang);
+    }
+
+    pub fn set_country(&mut self, country: &str) {
+        let c_country = CString::new(country).unwrap();
+        self.opts.country = c_country.as_ptr() as *mut c_char;
+        self.c_country = Some(c_country);
     }
 }
 
