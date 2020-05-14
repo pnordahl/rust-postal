@@ -111,9 +111,6 @@ Note: `--test-threads 1` is required due to the single-threaded nature of `libpo
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
-Copyright [Knockway Inc.](https://www.knock.com) and its affiliates.
-
-
 ## Contributing
 
 1. Fork it (<https://github.com/pnordahl/rust-postal/fork>)
