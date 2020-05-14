@@ -1,5 +1,3 @@
-// Knockway Inc. and its affiliates. All Rights Reserved
-
 #[macro_use]
 extern crate criterion;
 

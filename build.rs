@@ -1,5 +1,3 @@
-// Knockway Inc. and its affiliates. All Rights Reserved
-
 extern crate bindgen;
 
 use std::env;
