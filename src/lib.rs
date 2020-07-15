@@ -8,6 +8,7 @@ extern crate parking_lot;
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 use parking_lot::Mutex;
+use std::convert::TryInto;
 use std::error;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -18,6 +19,7 @@ use std::os::raw::c_char;
 pub struct ExpandAddressOptions {
     pub opts: libpostal_normalize_options_t,
     c_languages: Option<Vec<CString>>,
+    c_languages_ptrs: Option<Vec<*const c_char>>,
 }
 impl ExpandAddressOptions {
     pub fn new() -> Self {
@@ -25,14 +27,18 @@ impl ExpandAddressOptions {
             ExpandAddressOptions {
                 opts: libpostal_get_default_options(),
                 c_languages: None,
+                c_languages_ptrs: None,
             }
         }
     }
+
     pub fn set_languages(&mut self, langs: &[&str]) {
         let c_langs: Vec<CString> = langs.iter().map(|l| CString::new(*l).unwrap()).collect();
-        self.opts.languages = c_langs.as_ptr() as *mut *mut c_char;
-        self.opts.num_languages = c_langs.len();
+        let mut ptrs: Vec<*const c_char> = c_langs.iter().map(|cs| cs.as_ptr()).collect();
+        self.opts.languages = ptrs.as_mut_ptr() as *mut *mut c_char;
+        self.opts.num_languages = ptrs.len() as u64;
         self.c_languages = Some(c_langs);
+        self.c_languages_ptrs = Some(ptrs);
     }
 }
 
@@ -80,7 +86,10 @@ impl<'a> Iterator for Expansions<'a> {
 impl<'a> Drop for Expansions<'a> {
     fn drop(&mut self) {
         unsafe {
-            libpostal_expansion_array_destroy(self.array, self.array_length as usize);
+            libpostal_expansion_array_destroy(
+                self.array,
+                (self.array_length as usize).try_into().unwrap(),
+            );
         }
     }
 }
@@ -226,9 +235,9 @@ impl Context {
                     Ok(c_string) => {
                         let addr = c_string.as_ptr() as *mut c_char;
 
-                        let mut num_expansions: usize = 0;
+                        let mut num_expansions: u64 = 0;
                         let raw = libpostal_expand_address(addr, opts.opts, &mut num_expansions);
-                        Ok(Expansions::new(raw, num_expansions))
+                        Ok(Expansions::new(raw, num_expansions.try_into().unwrap()))
                     }
                     Err(e) => Err(PostalError::BadCString(e)),
                 }
@@ -368,7 +377,29 @@ mod tests {
     }
 
     #[test]
-    fn test_expand_address() {
+    fn test_expand_address_no_languages() {
+        let mut ctx = Context::new();
+        ctx.init(InitOptions {
+            expand_address: true,
+            parse_address: false,
+        })
+        .unwrap();
+        let mut opts = ExpandAddressOptions::new();
+        let expansions = ctx
+            .expand_address("1234 Cherry Ln, Podunk, TX", &mut opts)
+            .unwrap();
+        let expect = vec![
+            "1234 cherry lane podunk texas",
+            "1234 cherry lane podunk tx",
+            "1234 cherry line podunk texas",
+            "1234 cherry line podunk tx",
+        ];
+
+        assert!(expansions.eq(expect));
+    }
+
+    #[test]
+    fn test_expand_address_one_language() {
         let mut ctx = Context::new();
         ctx.init(InitOptions {
             expand_address: true,
@@ -389,7 +420,7 @@ mod tests {
     }
 
     #[test]
-    fn test_expand_address_no_languages() {
+    fn test_expand_address_multiple_languages() {
         let mut ctx = Context::new();
         ctx.init(InitOptions {
             expand_address: true,
@@ -397,14 +428,23 @@ mod tests {
         })
         .unwrap();
         let mut opts = ExpandAddressOptions::new();
+        let langs = vec!["fr", "de"];
+        opts.set_languages(&langs);
+
         let expansions = ctx
-            .expand_address("1234 Cherry Ln, Podunk, TX", &mut opts)
+            .expand_address("Thirty W 26th St Fl #7", &mut opts)
             .unwrap();
         let expect = vec![
-            "1234 cherry lane podunk texas",
-            "1234 cherry lane podunk tx",
-            "1234 cherry line podunk texas",
-            "1234 cherry line podunk tx",
+            "thirty w 26th saint fleuve numero 7",
+            "thirty w 26 th saint fleuve numero 7",
+            "thirty wohnung 26th sankt fl nummer 7",
+            "thirty w 26th sankt fl nummer 7",
+            "thirty weg 26th sankt fl nummer 7",
+            "thirty west 26th sankt fl nummer 7",
+            "thirty wohnung 26 th sankt fl nummer 7",
+            "thirty w 26 th sankt fl nummer 7",
+            "thirty weg 26 th sankt fl nummer 7",
+            "thirty west 26 th sankt fl nummer 7",
         ];
 
         assert!(expansions.eq(expect));
