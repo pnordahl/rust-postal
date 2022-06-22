@@ -1,0 +1,63 @@
+name: Rust
+
+on:
+  push:
+    branches: travis_to_actions
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  libpostal:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+        sudo apt-get install -y gcc-4.8 libsnappy-dev realpath pkg-config
+        export CC="gcc-4.8"
+        git clone https://github.com/openvenues/libpostal
+        cd libpostal
+        ./bootstrap.sh
+        ./configure --datadir=$(pwd)/data
+        sudo make install
+        cd ..
+        sudo ldconfig
+
+  rust-postal:
+    name: rust-postal
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: check
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          run: cargo check --verbose --all
+
+      - name: build
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          run: cargo build --verbose --all
+
+      - name: test
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          run: cargo test --verbose --all -- --test-threads 1
+
+      - name: bench
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          run: cargo bench
+
+
