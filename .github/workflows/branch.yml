@@ -9,17 +9,21 @@ env:
 
 jobs:
   libpostal:
+    name: libpostal
     runs-on: ubuntu-latest
-    run: |
-        sudo apt-get install -y gcc-4.8 libsnappy-dev realpath pkg-config
-        export CC="gcc-4.8"
-        git clone https://github.com/openvenues/libpostal
-        cd libpostal
-        ./bootstrap.sh
-        ./configure --datadir=$(pwd)/data
-        sudo make install
-        cd ..
-        sudo ldconfig
+    steps:
+      - name: install
+        with:
+          run: |
+            sudo apt-get install -y gcc-4.8 libsnappy-dev realpath pkg-config
+            export CC="gcc-4.8"
+            git clone https://github.com/openvenues/libpostal
+            cd libpostal
+            ./bootstrap.sh
+            ./configure --datadir=$(pwd)/data
+            sudo make install
+            cd ..
+            sudo ldconfig
 
   rust-postal:
     name: rust-postal
