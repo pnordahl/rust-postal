@@ -11,7 +11,7 @@ jobs:
   libpostal:
     runs-on: ubuntu-latest
     steps:
-      - run: |
+      run: |
         sudo apt-get install -y gcc-4.8 libsnappy-dev realpath pkg-config
         export CC="gcc-4.8"
         git clone https://github.com/openvenues/libpostal
