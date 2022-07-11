@@ -46,14 +46,14 @@ jobs:
         with:
           toolchain: stable
           command: build
-            args: --verbose --all
+          args: --verbose --all
 
       - name: test
         uses: actions-rs/cargo@v1
         with:
           toolchain: stable
           command: test
-            args: --verbose --all -- --test-threads 1
+          args: --verbose --all -- --test-threads 1
 
       - name: bench
         uses: actions-rs/cargo@v1
