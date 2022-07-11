@@ -12,19 +12,19 @@ jobs:
     name: rust-postal
     runs-on: ubuntu-latest
     steps:
+      - name: libpostal
+        run: |
+          sudo apt-get install -y gcc-4.8 libsnappy-dev realpath pkg-config
+          export CC="gcc-4.8"
+          git clone https://github.com/openvenues/libpostal
+          cd libpostal
+          ./bootstrap.sh
+          ./configure --datadir=$(pwd)/data
+          sudo make install
+          cd ..
+          sudo ldconfig
       - name: deps
         uses: actions/checkout@v2
-        with:
-          run: |
-            sudo apt-get install -y gcc-4.8 libsnappy-dev realpath pkg-config
-            export CC="gcc-4.8"
-            git clone https://github.com/openvenues/libpostal
-            cd libpostal
-            ./bootstrap.sh
-            ./configure --datadir=$(pwd)/data
-            sudo make install
-            cd ..
-            sudo ldconfig
 
       - name: rust stable toolchain
         uses: actions-rs/toolchain@v1
@@ -37,24 +37,28 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           toolchain: stable
-          run: cargo check --verbose --all
+          with:
+            command: check
+            args: --verbose --all
 
       - name: build
         uses: actions-rs/cargo@v1
         with:
           toolchain: stable
-          run: cargo build --verbose --all
+          command: build
+            args: --verbose --all
 
       - name: test
         uses: actions-rs/cargo@v1
         with:
           toolchain: stable
-          run: cargo test --verbose --all -- --test-threads 1
+          command: test
+            args: --verbose --all -- --test-threads 1
 
       - name: bench
         uses: actions-rs/cargo@v1
         with:
           toolchain: stable
-          run: cargo bench
+          command: bench
 
 
