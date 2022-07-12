@@ -15,7 +15,7 @@ jobs:
       - name: libpostal
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc libsnappy-dev realpath pkg-config
+          sudo apt-get install -y gcc libsnappy-dev manpages-fr-extra pkg-config
           gcc --version
           exit 1
           export CC="gcc-11.2"
