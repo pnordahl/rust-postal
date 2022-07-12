@@ -26,6 +26,8 @@ jobs:
           sudo make install
           cd ..
           sudo ldconfig
+          sudo chown -R $USER:$USER ${{ github.workspace }}
+
       - name: deps
         uses: actions/checkout@v2
 
