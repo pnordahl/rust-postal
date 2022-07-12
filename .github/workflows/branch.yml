@@ -37,9 +37,8 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           toolchain: stable
-          with:
-            command: check
-            args: --verbose --all
+          command: check
+          args: --verbose --all
 
       - name: build
         uses: actions-rs/cargo@v1
