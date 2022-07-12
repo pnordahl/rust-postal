@@ -15,10 +15,8 @@ jobs:
       - name: libpostal
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc libsnappy-dev manpages-fr-extra pkg-config
-          gcc --version
-          exit 1
-          export CC="gcc-11.2"
+          sudo apt-get install -y gcc-9.4 libsnappy-dev realpath pkg-config
+          export CC="gcc-9.4"
           git clone https://github.com/openvenues/libpostal
           cd libpostal
           ./bootstrap.sh
