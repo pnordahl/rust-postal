@@ -2,7 +2,11 @@ name: Rust
 
 on:
   push:
-    branches: travis_to_actions
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
 
 env:
   CARGO_TERM_COLOR: always
