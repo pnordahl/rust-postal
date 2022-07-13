@@ -1,7 +1,8 @@
 # rust-postal
 > Bindings to the libpostal street address parsing/normalization C library.
 
-[![Build Status](https://travis-ci.com/pnordahl/rust-postal.svg?branch=master)](https://travis-ci.com/pnordahl/rust-postal)
+![Build Status](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?branch=main)
+
 [![Cargo](https://img.shields.io/crates/v/postal.svg)](https://crates.io/crates/postal)
 
 This library provides [rust-lang/rust-bindgen](https://github.com/rust-lang/rust-bindgen) generated Rust <-> C bindings, and puts an ergonomic and safe Rust API on top of them.
