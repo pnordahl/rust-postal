@@ -1,7 +1,7 @@
 # rust-postal
 > Bindings to the libpostal street address parsing/normalization C library.
 
-![Build Status](https://github.com/github/docs/actions/workflows/branch.yml/badge.svg?branch=master)
+![Build Status](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?branch=master)
 
 [![Cargo](https://img.shields.io/crates/v/postal.svg)](https://crates.io/crates/postal)
 
