@@ -1,0 +1,75 @@
+name: Rust
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  rust-postal:
+    name: rust-postal
+    runs-on: ubuntu-latest
+    steps:
+      - name: prep
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}
+
+      - name: deps
+        uses: actions/checkout@v2
+
+      - name: libpostal
+        run: |
+          sudo apt-get update
+          sudo apt-cache search gcc
+          sudo apt-get install -y gcc-11 libsnappy-dev manpages-fr-extra pkg-config
+          gcc --version
+          export CC="gcc-11"
+          git clone https://github.com/openvenues/libpostal
+          cd libpostal
+          ./bootstrap.sh
+          ./configure --datadir=$(pwd)/data
+          sudo make install
+          cd ..
+          sudo ldconfig
+
+      - name: rust stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: check
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          command: check
+          args: --verbose --all
+
+      - name: build
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          command: build
+          args: --verbose --all
+
+      - name: test
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          command: test
+          args: --verbose --all -- --test-threads 1
+
+      - name: bench
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          command: bench
+
+
