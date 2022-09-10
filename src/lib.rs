@@ -5,7 +5,11 @@
 
 extern crate parking_lot;
 
-include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+#[allow(clippy::too_many_arguments)]
+mod bindings {
+    include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
+}
+pub use bindings::*;
 
 use parking_lot::Mutex;
 use std::convert::TryInto;
@@ -41,6 +45,11 @@ impl ExpandAddressOptions {
         self.c_languages_ptrs = Some(ptrs);
     }
 }
+impl Default for ExpandAddressOptions {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 pub struct Expansions<'a> {
     index: isize,
@@ -53,7 +62,7 @@ impl<'a> Expansions<'a> {
     pub fn new(array: *mut *mut c_char, length: usize) -> Self {
         Expansions {
             index: 0,
-            array: array,
+            array,
             array_length: length as isize,
             phantom: PhantomData,
         }
@@ -98,13 +107,18 @@ impl<'a> Drop for Expansions<'a> {
 pub struct ParseAddressOptions {
     pub opts: libpostal_address_parser_options_t,
 }
-impl<'a> ParseAddressOptions {
+impl ParseAddressOptions {
     pub fn new() -> Self {
         unsafe {
             ParseAddressOptions {
                 opts: libpostal_get_address_parser_default_options(),
             }
         }
+    }
+}
+impl Default for ParseAddressOptions {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -119,7 +133,7 @@ impl<'a> Components<'a> {
     fn new(resp: *mut libpostal_address_parser_response_t) -> Self {
         Components {
             index: 0,
-            resp: resp,
+            resp,
             phantom: PhantomData,
         }
     }
@@ -144,20 +158,20 @@ impl<'a> Iterator for Components<'a> {
                         match ls.to_str() {
                             Ok(label) => {
                                 self.index += 1;
-                                return Some(Component {
-                                    label: label,
+                                Some(Component {
+                                    label,
                                     value: component,
-                                });
+                                })
                             }
                             Err(_) => {
                                 // TODO: bad string from libpostal, can't really handle
-                                return None;
+                                None
                             }
                         }
                     }
                     Err(_) => {
                         // TODO: bad string from libpostal, can't really handle
-                        return None;
+                        None
                     }
                 }
             } else {
@@ -266,6 +280,11 @@ impl Context {
         } else {
             Err(PostalError::LibpostalNotReady)
         }
+    }
+}
+impl Default for Context {
+    fn default() -> Self {
+        Self::new()
     }
 }
 impl Drop for Context {
