@@ -4,12 +4,13 @@ description = "FFI bindings and safe interface to libpostal"
 license = "MIT"
 homepage = "https://github.com/pnordahl/rust-postal"
 repository = "https://github.com/pnordahl/rust-postal"
-version = "0.2.4"
+version = "0.2.5"
 authors = ["Patrick Nordahl <plnordahl@gmail.com>"]
-edition = "2018"
+edition = "2021"
 build = "build.rs"
 links = "libpostal"
-keywords = ["libpostal", "postal"]
+readme = "README.md"
+keywords = ["libpostal", "postal", "addresses"]
 
 [dev-dependencies]
 criterion = "0.2"
