@@ -52,6 +52,13 @@ jobs:
           command: check
           args: --verbose --all
 
+      - name: clippy
+        uses: actions-rs/cargo@v1
+        with:
+          toolchain: stable
+          command: clippy
+          args: -- -D warnings
+
       - name: build
         uses: actions-rs/cargo@v1
         with:
