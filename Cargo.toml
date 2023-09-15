@@ -16,7 +16,7 @@ keywords = ["libpostal", "postal", "addresses"]
 criterion = "0.3"
 
 [dependencies]
-parking_lot = "0.10.0"
+parking_lot = "0.12.1"
 
 [build-dependencies]
 bindgen = "0.60"
