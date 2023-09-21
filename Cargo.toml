@@ -19,7 +19,7 @@ criterion = "0.3"
 parking_lot = "0.12.1"
 
 [build-dependencies]
-bindgen = "0.60"
+bindgen = "0.68.1"
 
 [[bench]]
 name = "benches"

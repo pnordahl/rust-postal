@@ -40,7 +40,7 @@ impl ExpandAddressOptions {
         let c_langs: Vec<CString> = langs.iter().map(|l| CString::new(*l).unwrap()).collect();
         let mut ptrs: Vec<*const c_char> = c_langs.iter().map(|cs| cs.as_ptr()).collect();
         self.opts.languages = ptrs.as_mut_ptr() as *mut *mut c_char;
-        self.opts.num_languages = ptrs.len() as u64;
+        self.opts.num_languages = ptrs.len();
         self.c_languages = Some(c_langs);
         self.c_languages_ptrs = Some(ptrs);
     }
@@ -249,7 +249,7 @@ impl Context {
                     Ok(c_string) => {
                         let addr = c_string.as_ptr() as *mut c_char;
 
-                        let mut num_expansions: u64 = 0;
+                        let mut num_expansions: usize = 0;
                         let raw = libpostal_expand_address(addr, opts.opts, &mut num_expansions);
                         Ok(Expansions::new(raw, num_expansions.try_into().unwrap()))
                     }
