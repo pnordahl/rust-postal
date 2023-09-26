@@ -4,7 +4,7 @@ description = "FFI bindings and safe interface to libpostal"
 license = "MIT"
 homepage = "https://github.com/pnordahl/rust-postal"
 repository = "https://github.com/pnordahl/rust-postal"
-version = "0.2.5"
+version = "0.2.6"
 authors = ["Patrick Nordahl <plnordahl@gmail.com>"]
 edition = "2021"
 build = "build.rs"
@@ -16,10 +16,10 @@ keywords = ["libpostal", "postal", "addresses"]
 criterion = "0.2"
 
 [dependencies]
-parking_lot = "0.8.0"
+parking_lot = "0.12.0"
 
 [build-dependencies]
-bindgen = "0.60"
+bindgen = "0.68"
 
 [[bench]]
 name = "benches"

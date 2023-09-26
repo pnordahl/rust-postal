@@ -6,6 +6,8 @@
 
 This library provides [rust-lang/rust-bindgen](https://github.com/rust-lang/rust-bindgen) generated Rust <-> C bindings, and puts an ergonomic and safe Rust API on top of them.
 
+This crate requires Rust 1.60 or newer.
+
 ## Installation
 
 Follow the README instructions at [openvenues/libpostal](https://github.com/openvenues/libpostal) to install the shared library for your platform. Currently, the compiled object is dynamically linked when your project runs - static linkage could be supported in the future.
@@ -95,6 +97,9 @@ cargo bench
 Note: `--test-threads 1` is required due to the single-threaded nature of `libpostal`.
 
 ## Release History
+* 0.2.6
+	* Update bindgen and parking_lot, replace deprecated rustfmt_bindings with formatter for bindgen
+
 * 0.2.2
 	* Resolve locking issue due to unbound Mutex guard.
 
