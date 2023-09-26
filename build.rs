@@ -7,7 +7,7 @@ fn main() {
     println!("cargo:rustc-link-lib=dylib=postal");
 
     let bindings = bindgen::Builder::default()
-        .rustfmt_bindings(true)
+        .formatter(bindgen::Formatter::Rustfmt)
         .header("wrapper.h")
         .derive_debug(true)
         .trust_clang_mangling(false)

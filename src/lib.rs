@@ -5,14 +5,13 @@
 
 extern crate parking_lot;
 
-#[allow(clippy::too_many_arguments)]
+#[allow(clippy::all)]
 mod bindings {
     include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 }
 pub use bindings::*;
 
 use parking_lot::Mutex;
-use std::convert::TryInto;
 use std::error;
 use std::ffi::{CStr, CString};
 use std::fmt;
@@ -40,7 +39,7 @@ impl ExpandAddressOptions {
         let c_langs: Vec<CString> = langs.iter().map(|l| CString::new(*l).unwrap()).collect();
         let mut ptrs: Vec<*const c_char> = c_langs.iter().map(|cs| cs.as_ptr()).collect();
         self.opts.languages = ptrs.as_mut_ptr() as *mut *mut c_char;
-        self.opts.num_languages = ptrs.len() as u64;
+        self.opts.num_languages = ptrs.len();
         self.c_languages = Some(c_langs);
         self.c_languages_ptrs = Some(ptrs);
     }
@@ -95,10 +94,7 @@ impl<'a> Iterator for Expansions<'a> {
 impl<'a> Drop for Expansions<'a> {
     fn drop(&mut self) {
         unsafe {
-            libpostal_expansion_array_destroy(
-                self.array,
-                (self.array_length as usize).try_into().unwrap(),
-            );
+            libpostal_expansion_array_destroy(self.array, self.array_length as usize);
         }
     }
 }
@@ -249,9 +245,9 @@ impl Context {
                     Ok(c_string) => {
                         let addr = c_string.as_ptr() as *mut c_char;
 
-                        let mut num_expansions: u64 = 0;
+                        let mut num_expansions: usize = 0;
                         let raw = libpostal_expand_address(addr, opts.opts, &mut num_expansions);
-                        Ok(Expansions::new(raw, num_expansions.try_into().unwrap()))
+                        Ok(Expansions::new(raw, num_expansions))
                     }
                     Err(e) => Err(PostalError::BadCString(e)),
                 }
@@ -324,7 +320,7 @@ impl fmt::Display for PostalError {
             }
             PostalError::LibpostalEnableParsing => write!(f, "libpostal_setup_parser failed"),
             PostalError::BadCString(ref err) => {
-                write!(f, "failed to convert &str into c string, error: '{}'", err)
+                write!(f, "failed to convert &str into c string, error: '{err}'")
             }
             PostalError::LibpostalNotReady => write!(
                 f,
